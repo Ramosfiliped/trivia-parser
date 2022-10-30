@@ -1,9 +1,5 @@
 // parser.mly
 
-%{
-  open Ast
-%}
-
 %token                 EOF
 %token                 LPAREN
 %token                 RPAREN
@@ -38,6 +34,8 @@
 %token <int>           LITINT
 %token <Symbol.symbol> ID
 
+(* add precedence rules if needed *)
+
 %left OR
 %left AND
 %nonassoc EQUAL NEQUAL LT LE GT GE
@@ -49,64 +47,67 @@
 %%
 
 program:
-| x=fundecs EOF { $loc, Ast.Program x }
+  (* this rule should be updated *)
+| x=fns EOF { $loc, Ast.Program x }
+;
+(* write the missing production rules *)
+
+
+fns:
+| fs = nonempty_list(fn) {fs}
+;
+
+fn:
+| f1=tpid LPAREN f2=tpids RPAREN EQ e=exp {$loc, (f1, f2, e)}
+;
+
+id:
+| x = ID {$loc, x}
+;
+
+tpid:
+| INT xi=id { (Ast.Int, xi) }
+| BOOL xb=id { (Ast.Bool, xb) }
+| UNIT xu=id { (Ast.Unit, xu) }
+;
+
+tpids:
+| ti=separated_list(COMMA, tpid) { ti }
 ;
 
 exp:
-| x=LITINT                            { $loc, Ast.IntExp x }
-| x=LITBOOL                           { $loc, Ast.BoolExp x}
-| x=ID                                { $loc, Ast.VarExp x }
-| x=ID a=ASSIGN y=exp                 { $loc, Ast.AssignExp (x, a, y)}
-| x=exp op=operator y=exp             { $loc, Ast.OpExp (op, x, y) }
-| IF x=exp THEN y=exp ELSE z=exp      { $loc, Ast.IfExp x, y, Some z }
-| IF x=exp THEN y=exp                 { $loc, Ast.IfExp x, y, None}
-| WHILE x=exp DO y=exp                { $loc, Ast.WhileExp(x, y) }
-| f=ID LPAREN a=exps RPAREN           { $loc, Ast.CallExp (f, a) }
-| LET x=ID EQ i=exp IN b=exp          { $loc, Ast.LetExp (x, i, b) }
-| LPAREN x=exps RPAREN                { $loc, Ast.SeqExp x}
+| e=LITINT {$loc, Ast.IntExp e}
+| e=LITBOOL {$loc, Ast.BoolExp e}
+| e=ID {$loc, Ast.VarExp e}
+| x=ID ASSIGN e=exp {$loc, Ast.AssignExp (x, e)}
+| a=exp bo=binop b=exp {$loc, Ast.OpExp(bo,a,b)}
+| IF a=exp THEN b=exp ELSE c=exp {$loc, Ast.IfExp(a, b, Some c) }
+| IF a=exp THEN b=exp { $loc, Ast.IfExp(a, b, None) }
+| WHILE a=exp DO b=exp { $loc, Ast.WhileExp (a, b) }
+| x=ID LPAREN ar=argss RPAREN { $loc, Ast.CallExp (x, ar) }
+| LET x=ID EQ a=exp IN b=exp { $loc, Ast.LetExp (x, a, b) }
+| LPAREN es=expss RPAREN { $loc, Ast.SeqExp es }
 ;
 
-%inline operator:
-| PLUS   { Ast.Plus  }
-| MINUS  { Ast.Minus }
-| TIMES  { Ast.Times }
-| DIV    { Ast.Div   }
-| REST   { Ast.Rest  }
-| EQUAL  { Ast.EQ    }
-| NEQUAL { Ast.NE    }
-| LT     { Ast.LT    }
-| LE     { Ast.LE    }
-| GT     { Ast.GT    }
-| GE     { Ast.GE    }
-| AND    { Ast.And   }
-| OR     { Ast.Or    }
+argss:
+| ar = separated_list(COMMA, exp) {ar}
+
+expss:
+| es = separated_list(SEMICOLON, exp) {es}
 ;
 
-fundecs:
-| l=nonempty_list(fundec) { l }
+%inline binop:
+| PLUS { Ast.Plus }
+| MINUS { Ast.Minus }
+| TIMES { Ast.Times }
+| DIV { Ast.Div }
+| REST { Ast.Rest }
+| EQUAL { Ast.EQ }
+| NEQUAL { Ast.NE }
+| LT { Ast.LT }
+| LE { Ast.LE }
+| GT { Ast.GT }
+| GE { Ast.GE }
+| AND { Ast.And }
+| OR { Ast.Or }
 ;
-
-fundec:
-| x=typeid LPAREN p=typeids RPAREN EQ b=exp { $loc, (x, p, b) }
-;
-
-symbol:
-| x=ID { $loc, x }
-;
-
-typeid:
-| INT x=symbol { (Ast.Int, x) }
-| BOOL x=symbol { (Ast.Bool, x) }
-| UNIT x=symbol { (Ast.Unit, x) }
-;
-
-typeids:
-| x=separated_list(COMMA, typeid) { x }
-;
-
-exps:
-| x=separated_list(SEMICOLON, exp) { x }
-;
-
-args:
-| x=separated_list(COMMA, exp) { x }
