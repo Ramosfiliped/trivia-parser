@@ -57,7 +57,7 @@ exp:
 | x=ID                                { $loc, Ast.VarExp x }
 | x=ID a=ASSIGN y=exp                 { $loc, Ast.AssignExp (x, a, y)}
 | x=exp op=operator y=exp             { $loc, Ast.OpExp (op, x, y) }
-| IF t=exp THEN x=exp ELSE y=expotion { $loc, Ast.IfExp (t, x, y) }
+| IF t=exp THEN x=exp ELSE y=exp { $loc, Ast.IfExp (t, x, y) }
 | WHILE x=exp DO y=exp                { $loc, Ast.WhileExp(x, y) }
 | f=ID LPAREN a=exps RPAREN           { $loc, Ast.CallExp (f, a) }
 | LET x=ID EQ i=exp IN b=exp          { $loc, Ast.LetExp (x, i, b) }
@@ -77,9 +77,6 @@ exp:
 | GE     { Ast.GE    }
 | AND    { Ast.And   }
 | OR     { Ast.Or    }
-
-expoption:
- | b = option(e= exp ELSE { e }) { b }
 
 fundecs:
 | l=nonempty_list(fundec) { l }
