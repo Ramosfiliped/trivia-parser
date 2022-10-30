@@ -35,56 +35,65 @@
 %token <Symbol.symbol> ID
 
 %nonassoc EQUAL NEQUAL LT LE GT GE
+%left TIMES DIV REST
 %left PLUS MINUS
-%left TIMES DIV
+%left AND
+%left OR
 
-%start <lprogram>  program
+%start <Ast.lprogram>  program
 
 %%
 
 program:
-  | s = nonempty_list(fundec) EOF { $loc, Program (s) };
+| x=fundecs EOF { $loc, Ast.Program x }
 
 exp:
-  | a = LITINT { $loc, IntExp a }
-  | a = LITBOOL { $loc, BoolExp a }
-  | a = ID { $loc, VarExp a }
-  | a = ID ASSIGN e1 = exp { $loc, AssignExp (a, e1) }
-  | e1 = exp op = binop e2 = exp { $loc, OpExp (op, e1, e2) }
-  | IF e1 = exp THEN e2 = exp ELSE e3 = expoption { $loc, IfExp (e1, e2, e3) }
-  | WHILE e1 = exp DO e2 = exp { $loc, WhileExp (e1, e2) }
-  | c = ID LPAREN d = explist RPAREN { $loc, CallExp (c, d)}
-  | LET c = ID EQ e1 = exp IN e2 = exp { $loc, LetExp (c, e1, e2) }
-  | LPAREN a = explist RPAREN { $loc, SeqExp a };
+| x=LITINT                       { $loc, Absyn.IntExp x }
+| x=LITBOOL                      { $loc, Absyn.BoolExp x}
+| x=ID                           { $loc, Absyn.VarExp x }
+| x=ID a=ASSIGN y=exp            { $loc, Absyn.AssignExp (x, a, y)}
+| x=exp op=operator y=exp        { $loc, Absyn.OpExp (op, x, y) }
+| IF t=exp THEN x=exp ELSE y=exp { $loc, Absyn.IfExp (t, x, y) }
+| IF t=exp THEN x=exp            { $loc, Absyn.IfExp (t, x) }
+| WHILE x=exp DO y=exp           { $loc, Absyn.WhileExp(x, y) }
+| f=ID LPAREN a=exps RPAREN      { $loc, Absyn.CallExp (f, a) }
+| LET x=ID EQ i=exp IN b=exp     { $loc, Absyn.LetExp (x, i, b) }
+| LPAREN x=exp RPAREN            { $loc, Absyn.SeqExp x}
+
+%inline operator:
+| PLUS   { Absyn.Plus  }
+| MINUS  { Absyn.Minus }
+| TIMES  { Absyn.Times }
+| DIV    { Absyn.Div   }
+| REST   { Absyn.Rest  }
+| EQUAL  { Absyn.EQ    }
+| NEQUAL { Absyn.NE    }
+| LT     { Absyn.LT    }
+| LE     { Absyn.LE    }
+| GT     { Absyn.GT    }
+| GE     { Absyn.GE    }
+| AND    { Absyn.And   }
+| OR     { Absyn.OR    }
+
+fundecs:
+| l=nonempty_list(fundec) { l }
 
 fundec:
-  | a = typeid LPAREN b = typeidlist RPAREN EQ e = exp { $loc, (a, b, e) };
+| x=typeid LPAREN p=typeids RPAREN EQ b=exp { $loc, (x, p, b) }
+
+symbol:
+| x=ID { $loc, x }
 
 typeid:
-  | INT  x = ID { Int, ($loc, x) }
-  | BOOL x = ID { Bool, ($loc, x) }
-  | UNIT x = ID { Unit, ($loc, x) };
+| INT x=symbol { (Absyn.Int, x) }
+| BOOL x=symbol { (Absyn.Bool, x) }
+| UNIT x=symbol { (Absyn.Unit, x)}
 
-typeidlist:
-  | b = separated_nonempty_list(COMMA, typeid) { b };
+typeids:
+| x=separated_nonempty_list(COMMA, typeid) { x }
 
-explist:
-  | b = separated_nonempty_list(SEMICOLON, exp) { b };
+exps:
+| x=separated_nonempty_list(COMMA, exp) { x }
 
-expoption:
- | b = option(e= exp ELSE { e }) { b }
-
-%inline binop:
-  | PLUS { Plus }
-  | MINUS { Minus }
-  | TIMES { Times }
-  | DIV { Div }
-  | REST { Rest }
-  | EQUAL { EQ }
-  | NEQUAL { NE }
-  | LT { LT }
-  | LE { LE }
-  | GT { GT }
-  | GE { GE }
-  | AND { And }
-  | OR { Or };
+args:
+| x=exp y=argss
