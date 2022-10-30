@@ -58,7 +58,7 @@ exp:
 | x=ID a=ASSIGN y=exp                 { $loc, Ast.AssignExp (x, a, y)}
 | x=exp op=operator y=exp             { $loc, Ast.OpExp (op, x, y) }
 | IF a=exp THEN b=exp ELSE c=exp      { $loc, Ast.IfExp a, b, Some c }
-| IF a=exp THEN b=exp                 { $loc, Ast.IfExp a, b, None }
+| IF a=exp THEN b=exp                 { $loc, Ast.IfExp a, b, none }
 | WHILE x=exp DO y=exp                { $loc, Ast.WhileExp(x, y) }
 | f=ID LPAREN a=exps RPAREN           { $loc, Ast.CallExp (f, a) }
 | LET x=ID EQ i=exp IN b=exp          { $loc, Ast.LetExp (x, i, b) }
