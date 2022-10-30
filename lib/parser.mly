@@ -50,6 +50,7 @@
 
 program:
 | x=fundecs EOF { $loc, Ast.Program x }
+;
 
 exp:
 | x=LITINT                            { $loc, Ast.IntExp x }
@@ -63,6 +64,7 @@ exp:
 | f=ID LPAREN a=exps RPAREN           { $loc, Ast.CallExp (f, a) }
 | LET x=ID EQ i=exp IN b=exp          { $loc, Ast.LetExp (x, i, b) }
 | LPAREN x=exps RPAREN                { $loc, Ast.SeqExp x}
+;
 
 %inline operator:
 | PLUS   { Ast.Plus  }
@@ -78,26 +80,33 @@ exp:
 | GE     { Ast.GE    }
 | AND    { Ast.And   }
 | OR     { Ast.Or    }
+;
 
 fundecs:
 | l=nonempty_list(fundec) { l }
+;
 
 fundec:
 | x=typeid LPAREN p=typeids RPAREN EQ b=exp { $loc, (x, p, b) }
+;
 
 symbol:
 | x=ID { $loc, x }
+;
 
 typeid:
 | INT x=symbol { (Ast.Int, x) }
 | BOOL x=symbol { (Ast.Bool, x) }
 | UNIT x=symbol { (Ast.Unit, x) }
+;
 
 typeids:
 | x=separated_list(COMMA, typeid) { x }
+;
 
 exps:
 | x=separated_list(SEMICOLON, exp) { x }
+;
 
 args:
-  x=separated_list(COMMA, exp) { x }
+| x=separated_list(COMMA, exp) { x }
