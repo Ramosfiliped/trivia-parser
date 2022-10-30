@@ -52,32 +52,32 @@ program:
 | x=fundecs EOF { $loc, Ast.Program x }
 
 exp:
-| x=LITINT                       { $loc, Astl.IntExp x }
-| x=LITBOOL                      { $loc, Astl.BoolExp x}
-| x=ID                           { $loc, Astl.VarExp x }
-| x=ID a=ASSIGN y=exp            { $loc, Astl.AssignExp (x, a, y)}
-| x=exp op=operator y=exp        { $loc, Astl.OpExp (op, x, y) }
-| IF t=exp THEN x=exp ELSE y=exp { $loc, Astl.IfExp (t, x, y) }
-| IF t=exp THEN x=exp            { $loc, Astl.IfExp (t, x) }
-| WHILE x=exp DO y=exp           { $loc, Astl.WhileExp(x, y) }
-| f=ID LPAREN a=exps RPAREN      { $loc, Astl.CallExp (f, a) }
-| LET x=ID EQ i=exp IN b=exp     { $loc, Astl.LetExp (x, i, b) }
-| LPAREN x=exp RPAREN            { $loc, Astl.SeqExp x}
+| x=LITINT                       { $loc, Ast.IntExp x }
+| x=LITBOOL                      { $loc, Ast.BoolExp x}
+| x=ID                           { $loc, Ast.VarExp x }
+| x=ID a=ASSIGN y=exp            { $loc, Ast.AssignExp (x, a, y)}
+| x=exp op=operator y=exp        { $loc, Ast.OpExp (op, x, y) }
+| IF t=exp THEN x=exp ELSE y=exp { $loc, Ast.IfExp (t, x, y) }
+| IF t=exp THEN x=exp            { $loc, Ast.IfExp (t, x) }
+| WHILE x=exp DO y=exp           { $loc, Ast.WhileExp(x, y) }
+| f=ID LPAREN a=exps RPAREN      { $loc, Ast.CallExp (f, a) }
+| LET x=ID EQ i=exp IN b=exp     { $loc, Ast.LetExp (x, i, b) }
+| LPAREN x=exp RPAREN            { $loc, Ast.SeqExp x}
 
 %inline operator:
-| PLUS   { Astl.Plus  }
-| MINUS  { Astl.Minus }
-| TIMES  { Astl.Times }
-| DIV    { Astl.Div   }
-| REST   { Astl.Rest  }
-| EQUAL  { Astl.EQ    }
-| NEQUAL { Astl.NE    }
-| LT     { Astl.LT    }
-| LE     { Astl.LE    }
-| GT     { Astl.GT    }
-| GE     { Astl.GE    }
-| AND    { Astl.And   }
-| OR     { Astl.OR    }
+| PLUS   { Ast.Plus  }
+| MINUS  { Ast.Minus }
+| TIMES  { Ast.Times }
+| DIV    { Ast.Div   }
+| REST   { Ast.Rest  }
+| EQUAL  { Ast.EQ    }
+| NEQUAL { Ast.NE    }
+| LT     { Ast.LT    }
+| LE     { Ast.LE    }
+| GT     { Ast.GT    }
+| GE     { Ast.GE    }
+| AND    { Ast.And   }
+| OR     { Ast.OR    }
 
 fundecs:
 | l=nonempty_list(fundec) { l }
@@ -89,9 +89,9 @@ symbol:
 | x=ID { $loc, x }
 
 typeid:
-| INT x=symbol { (Astl.Int, x) }
-| BOOL x=symbol { (Astl.Bool, x) }
-| UNIT x=symbol { (Astl.Unit, x) }
+| INT x=symbol { (Ast.Int, x) }
+| BOOL x=symbol { (Ast.Bool, x) }
+| UNIT x=symbol { (Ast.Unit, x) }
 
 typeids:
 | x=separated_list(COMMA, typeid) { x }
