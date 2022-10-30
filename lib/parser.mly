@@ -1,5 +1,9 @@
 // parser.mly
 
+%{
+  open Ast
+%}
+
 %token                 EOF
 %token                 LPAREN
 %token                 RPAREN
