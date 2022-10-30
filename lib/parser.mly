@@ -93,4 +93,7 @@ typeids:
 | x=separated_nonempty_list(COMMA, typeid) { x }
 
 exps:
-| x=separated_nonempty_list(COMMA, exp) { x }
+| x=separated_nonempty_list(SEMICOLON, exp) { x }
+
+args:
+  x=separated_nonempty_list(COMMA, exp) { x }
