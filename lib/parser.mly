@@ -34,45 +34,57 @@
 %token <int>           LITINT
 %token <Symbol.symbol> ID
 
-(* add precedence rules if needed *)
+%nonassoc EQUAL NEQUAL LT LE GT GE
+%left PLUS MINUS
+%left TIMES DIV
 
-%start <Ast.lprogram>  program
+%start <lprogram>  program
 
 %%
 
 program:
-  (* this rule should be updated *)
-| x=LITINT EOF { $loc, Ast.Program x }
-
-(* write the missing production rules *)
+  | s = nonempty_list(fundec) EOF { $loc, Program (s) };
 
 exp:
-| x=LITINT { $loc, Absyn.IntExp x }
-| x=ID { $loc, Absyn.VarExp x }
-| x=exp op=operator y=exp { $loc, Absyn.OpExp (op, x, y) }
-| IF t=exp THEN x=exp ELSE y=exp { $loc, Absyn.IfExp (t, x, y) }
-| f=ID LPAREN a=exps RPAREN { $loc, Absyn.CallExp (f, a) }
-| LET x=ID EQ i=exp IN b=exp { $loc, Absyn.LetExp (x, i, b) }
-
-%inline operator:
-| PLUS { Absyn.Plus }
-| LT { Absyn.LT }
-
-fundecs:
-| l=nonempty_list(fundec) { l }
+  | a = LITINT { $loc, IntExp a }
+  | a = LITBOOL { $loc, BoolExp a }
+  | a = ID { $loc, VarExp a }
+  | a = ID ASSIGN e1 = exp { $loc, AssignExp (a, e1) }
+  | e1 = exp op = binop e2 = exp { $loc, OpExp (op, e1, e2) }
+  | IF e1 = exp THEN e2 = exp ELSE e3 = expoption { $loc, IfExp (e1, e2, e3) }
+  | WHILE e1 = exp DO e2 = exp { $loc, WhileExp (e1, e2) }
+  | c = ID LPAREN d = explist RPAREN { $loc, CallExp (c, d)}
+  | LET c = ID EQ e1 = exp IN e2 = exp { $loc, LetExp (c, e1, e2) }
+  | LPAREN a = explist RPAREN { $loc, SeqExp a };
 
 fundec:
-| x=typeid LPAREN p=typeids RPAREN EQ b=exp { $loc, (x, p, b) }
-
-symbol:
-| x=ID { $loc, x }
+  | a = typeid LPAREN b = typeidlist RPAREN EQ e = exp { $loc, (a, b, e) };
 
 typeid:
-| INT x=symbol { (Absyn.Int, x) }
-| BOOL x=symbol { (Absyn.Bool, x) }
+  | INT  x = ID { Int, ($loc, x) }
+  | BOOL x = ID { Bool, ($loc, x) }
+  | UNIT x = ID { Unit, ($loc, x) };
 
-typeids:
-| x=separated_nonempty_list(COMMA, typeid) { x }
+typeidlist:
+  | b = separated_nonempty_list(COMMA, typeid) { b };
 
-exps:
-| x=separated_nonempty_list(COMMA, exp) { x }
+explist:
+  | b = separated_nonempty_list(SEMICOLON, exp) { b };
+
+expoption:
+ | b = option(e= exp ELSE { e }) { b }
+
+%inline binop:
+  | PLUS { Plus }
+  | MINUS { Minus }
+  | TIMES { Times }
+  | DIV { Div }
+  | REST { Rest }
+  | EQUAL { EQ }
+  | NEQUAL { NE }
+  | LT { LT }
+  | LE { LE }
+  | GT { GT }
+  | GE { GE }
+  | AND { And }
+  | OR { Or };

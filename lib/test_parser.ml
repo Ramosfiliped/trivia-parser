@@ -168,7 +168,7 @@ let%expect_test "assignment" =
   [%expect{|
     Program
     └─Fun
-      ├─f:bool
+      ├─f:unit
       ├─Formals
       │ └─x:int
       └─AssignExp x
@@ -307,7 +307,7 @@ let%expect_test "repetition" =
   [%expect{|
     Program
     └─Fun
-      ├─f:bool
+      ├─f:unit
       ├─Formals
       │ └─x:int
       └─WhileExp
@@ -443,7 +443,7 @@ let%expect_test "sequence" =
   [%expect{|
     Program
     └─Fun
-      ├─f:bool
+      ├─f:unit
       ├─Formals
       └─SeqExp |}];
 
