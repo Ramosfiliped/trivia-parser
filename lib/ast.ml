@@ -37,16 +37,16 @@ type exp =
   [@@deriving show]
 
 (* this type should be uncommented *)
-(*
 and program =
   | Program of lfundec list
   [@@deriving show]
- *)
 
 (* this type should be commented *)
+(*
 and program =
   | Program of int
   [@@deriving show]
+*)
 
 and fundec = typeid * typeid list * lexp
   [@@deriving show]
