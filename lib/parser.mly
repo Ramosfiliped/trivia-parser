@@ -77,7 +77,7 @@ exp:
 | GT     { Ast.GT    }
 | GE     { Ast.GE    }
 | AND    { Ast.And   }
-| OR     { Ast.OR    }
+| OR     { Ast.Or    }
 
 fundecs:
 | l=nonempty_list(fundec) { l }
