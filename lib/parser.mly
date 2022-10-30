@@ -62,7 +62,7 @@ exp:
 | WHILE x=exp DO y=exp           { $loc, Ast.WhileExp(x, y) }
 | f=ID LPAREN a=exps RPAREN      { $loc, Ast.CallExp (f, a) }
 | LET x=ID EQ i=exp IN b=exp     { $loc, Ast.LetExp (x, i, b) }
-| LPAREN x=exp RPAREN            { $loc, Ast.SeqExp x}
+| LPAREN x=exps RPAREN            { $loc, Ast.SeqExp x}
 
 %inline operator:
 | PLUS   { Ast.Plus  }
