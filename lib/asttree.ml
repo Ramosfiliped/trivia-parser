@@ -63,14 +63,15 @@ and tree_of_fundec (typeid, params, body) =
     ]
 
 (* this function should be umcommentted *)
-(*
  and tree_of_program (Program fundecs) =
  mkt "Program" (map tree_of_lfundec fundecs)
- *)
+
 
 (* this function should be commented *)
+(*
 and tree_of_program (Program ct) =
   mkt "Program" [mkt (string_of_int ct) []]
+*)
 
 and tree_of_typeid (type_, (_loc, id)) =
   mkt (sprintf "%s:%s" (name id) (string_of_type_ type_)) []

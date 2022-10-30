@@ -87,7 +87,7 @@ symbol:
 typeid:
 | INT x=symbol { (Absyn.Int, x) }
 | BOOL x=symbol { (Absyn.Bool, x) }
-| UNIT x=symbol { (Absyn.Unit, x)}
+| UNIT x=symbol { (Absyn.Unit, x) }
 
 typeids:
 | x=separated_nonempty_list(COMMA, typeid) { x }
