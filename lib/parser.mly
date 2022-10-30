@@ -94,6 +94,3 @@ typeids:
 
 exps:
 | x=separated_nonempty_list(COMMA, exp) { x }
-
-args:
-| x=exp y=argss
