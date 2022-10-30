@@ -90,10 +90,10 @@ typeid:
 | UNIT x=symbol { (Absyn.Unit, x) }
 
 typeids:
-| x=separated_nonempty_list(COMMA, typeid) { x }
+| x=separated_list(COMMA, typeid) { x }
 
 exps:
-| x=separated_nonempty_list(SEMICOLON, exp) { x }
+| x=separated_list(SEMICOLON, exp) { x }
 
 args:
-  x=separated_nonempty_list(COMMA, exp) { x }
+  x=separated_list(COMMA, exp) { x }
